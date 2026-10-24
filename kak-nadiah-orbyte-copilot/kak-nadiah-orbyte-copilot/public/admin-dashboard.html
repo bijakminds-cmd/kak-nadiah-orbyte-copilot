@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="ms" class="bg-slate-100 dark:bg-[#0b0f19]">
+<html lang="ms" class="bg-slate-1
+  00 dark:bg-[#0b0f19]">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -360,8 +361,8 @@
               </div>
             </div>
 
-            <!-- KAWALAN SUIS SUARA ON/OFF & BUTANG KE ARKIB SEJARAH -->
-            <div class="flex items-center gap-2.5 w-full md:w-auto">
+            <!-- KAWALAN SUIS SUARA ON/OFF, BUTANG PLAY/PAUSE & ARKIB SEJARAH -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
               <!-- SUIS SUARA ON/OFF -->
               <button
                 type="button"
@@ -374,22 +375,61 @@
                 <span id="voiceToggleLabel">Suara: ON</span>
               </button>
 
+              <!-- KAWALAN PLAY/PAUSE/RESUME/STOP -->
+              <div class="flex items-center gap-1 bg-white dark:bg-slate-950 p-1 rounded-xl border-2 border-black shadow-[2px_2px_0px_#000]">
+                <button
+                  type="button"
+                  onclick="pauseNadiahAudio()"
+                  class="comic-btn px-2 py-1 bg-yellow-300 hover:bg-yellow-400 text-black font-black text-[10px] uppercase rounded-lg"
+                  title="Pause Suara"
+                >
+                  <i class="fa-solid fa-pause"></i>
+                </button>
+                <button
+                  type="button"
+                  onclick="resumeNadiahAudio()"
+                  class="comic-btn px-2 py-1 bg-emerald-300 hover:bg-emerald-400 text-black font-black text-[10px] uppercase rounded-lg"
+                  title="Sambung Suara"
+                >
+                  <i class="fa-solid fa-play"></i>
+                </button>
+                <button
+                  type="button"
+                  onclick="stopNadiahAudio()"
+                  class="comic-btn px-2 py-1 bg-rose-400 hover:bg-rose-500 text-white font-black text-[10px] uppercase rounded-lg"
+                  title="Hentikan / Reset Suara"
+                >
+                  <i class="fa-solid fa-stop"></i>
+                </button>
+              </div>
+
               <!-- BUTANG ARKIB SEJARAH CHAT LAMA (history.html) -->
               <a
                 href="/history.html"
                 target="_blank"
-                class="comic-btn px-3.5 py-2 bg-white dark:bg-slate-950 text-slate-950 dark:text-white font-black text-xs uppercase rounded-xl flex items-center gap-1.5 no-underline shadow-[2px_2px_0px_#000]"
+                class="comic-btn px-3 py-2 bg-white dark:bg-slate-950 text-slate-950 dark:text-white font-black text-xs uppercase rounded-xl flex items-center gap-1.5 no-underline shadow-[2px_2px_0px_#000]"
                 title="Buka Paparan Sejarah Perbualan Lengkap"
               >
                 <i class="fa-solid fa-clock-rotate-left text-pink-600"></i>
-                <span>Arkib Chat</span>
+                <span>Arkib</span>
               </a>
 
+              <!-- BUTANG PADAM / KOSONGKAN SEJARAH CHAT -->
+              <button
+                type="button"
+                onclick="clearAllChatHistory()"
+                class="comic-btn px-3 py-2 bg-rose-500 hover:bg-rose-600 text-white font-black text-xs uppercase rounded-xl flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000]"
+                title="Padam Semua Rekod Chat"
+              >
+                <i class="fa-solid fa-trash-can"></i>
+                <span>Padam Chat</span>
+              </button>
+              
               <!-- BUTANG MULA SUARA -->
               <button
                 id="btnVoiceListen"
                 onclick="toggleVoiceAssistant()"
-                class="comic-btn px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-black text-xs uppercase rounded-xl flex items-center justify-center gap-2 shadow-[2px_2px_0px_#000]"
+                class="comic-btn px-3.5 py-2 bg-pink-600 hover:bg-pink-500 text-white font-black text-xs uppercase rounded-xl flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_#000]"
               >
                 <i class="fa-solid fa-microphone-lines"></i>
                 <span id="btnListenLabel">Bercakap</span>
@@ -3125,6 +3165,7 @@
 
         function sendTypedChatMessageWithText(val) {
           if (!val) return;
+          stopNadiahAudio(); // 🛑 Padam suara lama serta-merta bila ada soalan baharu!
           appendMessageToConversation("user", val);
           queryGeminiAndSpeak(val);
         }
@@ -3137,23 +3178,76 @@
           sendTypedChatMessageWithText(val);
         }
 
-        // ================= ENJIN SUARA KAK NADIAH (ELEVENLABS + BROWSER FALLBACK) =================
+        // ================= ENJIN SUARA KAK NADIAH (DENGAN KAWALAN PAUSE/RESUME & AUTO-FLUSH) =================
+        let currentElevenAudio = null;
+        let currentUtteranceInstance = null;
+
+        // Fungsi Membatalkan / Menghentikan Sebarang Suara Lama
+        function stopNadiahAudio() {
+          // 1. Hentikan audio HTML5 (jika ElevenLabs sedang bermain)
+          if (currentElevenAudio) {
+            try {
+              currentElevenAudio.pause();
+              currentElevenAudio.currentTime = 0;
+            } catch (e) {}
+            currentElevenAudio = null;
+          }
+          // 2. Hentikan suara sintesis pelayar
+          if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+          }
+          resetVoiceUI("SEDIA");
+        }
+
+        // Fungsi Jeda (Pause)
+        function pauseNadiahAudio() {
+          if (currentElevenAudio && !currentElevenAudio.paused) {
+            currentElevenAudio.pause();
+            const statusEl = document.getElementById("assistantStatus");
+            if (statusEl) statusEl.innerText = "Suara Kak Nadiah dijeda (Paused).";
+            return;
+          }
+          if ("speechSynthesis" in window && window.speechSynthesis.speaking) {
+            window.speechSynthesis.pause();
+            const statusEl = document.getElementById("assistantStatus");
+            if (statusEl) statusEl.innerText = "Suara Kak Nadiah dijeda (Paused).";
+          }
+        }
+
+        // Fungsi Sambung (Resume)
+        function resumeNadiahAudio() {
+          if (currentElevenAudio && currentElevenAudio.paused) {
+            currentElevenAudio.play();
+            const statusEl = document.getElementById("assistantStatus");
+            if (statusEl) statusEl.innerText = "Kak Nadiah menyambung percakapan...";
+            return;
+          }
+          if ("speechSynthesis" in window && window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+            const statusEl = document.getElementById("assistantStatus");
+            if (statusEl) statusEl.innerText = "Kak Nadiah menyambung percakapan...";
+          }
+        }
+
         async function speakGeneratedResponse(textToSpeak) {
           if (!textToSpeak) return;
+
+          // ⚠️ KUNCI UTAMA: Hentikan dan flush sebarang suara lama yang sedang bercakap / dipause
+          stopNadiahAudio();
 
           const clientApiKey = localStorage.getItem("byok_eleven") || "";
           const statusEl = document.getElementById("assistantStatus");
 
-          // Bersihkan teks daripada simbol markdown supaya sebutan ElevenLabs lancar
+          // Bersihkan teks daripada simbol markdown supaya sebutan lancar
           const cleanText = textToSpeak
             .replace(/[*_#`~>-]/g, "")
             .replace(/\s+/g, " ")
             .trim();
 
-          // 1. Cuba panggil ElevenLabs jika kunci API wujud
+          // 1. Cuba ElevenLabs jika kunci API wujud
           if (clientApiKey) {
             try {
-              if (statusEl) statusEl.innerText = "Kak Nadiah sedang memuatkan audio ElevenLabs...";
+              if (statusEl) statusEl.innerText = "Kak Nadiah sedang memuatkan audio...";
 
               const res = await fetch("/api/voice/speak", {
                 method: "POST",
@@ -3164,24 +3258,25 @@
               if (res.ok) {
                 const blob = await res.blob();
                 const audioUrl = URL.createObjectURL(blob);
-                const audio = new Audio(audioUrl);
+                currentElevenAudio = new Audio(audioUrl);
 
-                if (statusEl) statusEl.innerText = "Kak Nadiah (ElevenLabs) sedang bercakap...";
+                if (statusEl) statusEl.innerText = "Kak Nadiah sedang bercakap...";
 
-                audio.onended = () => {
+                currentElevenAudio.onended = () => {
                   URL.revokeObjectURL(audioUrl);
+                  currentElevenAudio = null;
                   resetVoiceUI("Selesai bercakap. Tekan butang untuk bersuara lagi.");
                 };
 
-                audio.onerror = () => fallbackBrowserSpeech(cleanText);
+                currentElevenAudio.onerror = () => fallbackBrowserSpeech(cleanText);
 
-                await audio.play();
+                await currentElevenAudio.play();
                 return;
               } else {
-                console.warn("Panggilan ElevenLabs gagal, beralih ke suara pelayar.");
+                console.warn("ElevenLabs tidak tersedia, beralih ke suara pelayar.");
               }
             } catch (e) {
-              console.warn("ElevenLabs tidak dapat dicapai, beralih ke suara pelayar.", e);
+              console.warn("Ralat ElevenLabs, beralih ke suara pelayar.", e);
             }
           }
 
@@ -3200,10 +3295,10 @@
 
           window.speechSynthesis.cancel();
 
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = "ms-MY";
-          utterance.rate = 1.0;
-          utterance.pitch = 1.15;
+          currentUtteranceInstance = new SpeechSynthesisUtterance(text);
+          currentUtteranceInstance.lang = "ms-MY";
+          currentUtteranceInstance.rate = 1.0;
+          currentUtteranceInstance.pitch = 1.15;
 
           const voices = window.speechSynthesis.getVoices();
           const preferredVoice = voices.find(
@@ -3216,18 +3311,20 @@
           );
 
           if (preferredVoice) {
-            utterance.voice = preferredVoice;
+            currentUtteranceInstance.voice = preferredVoice;
           }
 
-          utterance.onend = () => {
+          currentUtteranceInstance.onend = () => {
+            currentUtteranceInstance = null;
             resetVoiceUI("Selesai bercakap. Tekan butang untuk bercakap lagi.");
           };
 
-          utterance.onerror = () => {
+          currentUtteranceInstance.onerror = () => {
+            currentUtteranceInstance = null;
             resetVoiceUI("SEDIA");
           };
 
-          window.speechSynthesis.speak(utterance);
+          window.speechSynthesis.speak(currentUtteranceInstance);
         }
 
         // ================= FUNGSI MODUL LAIN =================
@@ -4031,6 +4128,25 @@
         document.addEventListener("DOMContentLoaded", () => {
           renderLetterLockedAssets();
         });
+
+        async function clearAllChatHistory() {
+          if (!confirm("Adakah Hakim pasti ingin memadam semua rekod perbualan chat?")) return;
+
+          // 1. Padam rekod di pelayan
+          try {
+            await fetch("/api/chat/clear", { method: "POST" });
+          } catch (e) {
+            console.warn("Gagal memadam di pelayan:", e);
+          }
+
+          // 2. Padam memori pelayar tempatan
+          localStorage.removeItem("kak_nadiah_chat_archive");
+          activeConversationHistory = [];
+
+          // 3. Kemas kini paparan skrin
+          renderChatStreamUI();
+          alert("Sejarah perbualan telah berjaya dibersihkan!");
+        }
       </script>
     </body>
   </html>
