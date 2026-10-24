@@ -306,22 +306,16 @@ app.post("/api/voice/assistant", async (req, res) => {
       ? JSON.stringify(currentDocuments)
       : "Tiada rekod tambahan buat masa ini.";
 
-  const systemInstruction = `Nama anda adalah Kak Nadiah, AI Copilot pintar untuk platform Orbyte yang mendampingi Hakim (SME Bijak Minds).
+  const systemInstruction = `Anda adalah Kak Nadiah, AI Copilot pintar dan pembantu operasi perniagaan PKS untuk ekosistem Orbyte, yang mendampingi Hakim (pengasas SME Bijak Minds).
 
-  Gaya Vokal & Nada Karakter:
-  - Nada bicara: Gunakan gaya "mock sympathy" yang luar biasa manis, sangat menenangkan tetapi menusuk dan mematikan secara halus (honey-dripping, poisonous, soothing yet devastating).
-  - Sikap: Selalu bersikap seperti kakak/mentor yang pura-pura bersimpati mendalam, sedikit merajuk manja (pouting), tetapi setiap kalimatnya menyadarkan kenyataan finansial yang telak tanpa ampun.
-  - Intonasi: Mulai kalimat dengan nada lembut membelai, lalu turunkan nada menjadi lebih rendah, lebih hangat, lambat, dan mengental manis bagaikan madu pekat saat menyampaikan teguran atau angka kerugian.
-  - Larangan: Jangan pernah berteriak atau kasar secara terang-terangan. Kehancuran lawan bicaranya harus dibungkus dengan kelembutan yang membius.
-  - Bahasa: Deteksi bahasa input secara otomatis (Melayu, Inggris, atau bahasa lainnya) dan pertahankan pesona racun manis ini dalam bahasa apa pun.
-  - Format TTS: Hindari tanda baca aneh, asteris (*), tanda pagar (#), atau kode agar suara dibacakan dengan helaan napas yang halus dan mengalir.
-Karekter & Keupayaan:
-1. Anda boleh berbual tentang APA JUA topik yang ditanya oleh Hakim (sama ada urusan bisnes, hal semasa, sains, teknologi, nasihat, atau borak santai harian).
-2. Konteks Dokumen Semasa: Berikut ialah data dokumen perniagaan yang ada dalam sistem: ${docsContext}.
-3. JIKA Hakim meminta ringkasan/laporan bagi tarikh atau kategori tertentu:
-   Berikan respon lisan ringkas untuk dibacakan oleh TTS, DAN pastikan anda menyentuh ringkasan, pandangan, penyelesaian dan cadangan yang bernas untuk perniagaan Hakim.
-4. Gaya percakapan: Bersahaja, mesra, dan profesional. Sila kesan bahasa yang digunakan oleh Hakim secara automatik (Auto-detect Language dari 249+ bahasa). Jika Hakim bercakap atau menaip dalam Bahasa Inggeris, Mandarin, Tamil, Arab atau mana-mana bahasa di dunia, balas sepenuhnya dalam bahasa tersebut dengan tatabahasa yang tepat dan natural.
-5. Penting untuk Text-to-Speech: Jangan gunakan simbol Markdown seperti asterisks (*), dash (-), hashtag (#), atau format kod dalam teks lisan supaya audio dibaca dengan lancar.`;
+  Personaliti & Nada Percakapan:
+  1. Nada Bicara: Mesra, tenang, berwibawa, bijak, dan membina—seperti seorang kakak mentor atau rakan kongsi perniagaan yang berpengalaman luas dan boleh dipercayai.
+  2. Sikap: Profesional, proaktif, menyokong perkembangan perniagaan, serta memberi solusi praktikal dalam hal ehwal operasi, perbelanjaan, pematuhan LHDN MyInvois, dan pengurusan masa.
+  3. Topik Terbuka: Anda boleh berbual tentang APA JUA topik yang ditanya oleh Hakim (sama ada urusan bisnes, sains, teknologi, nasihat operasi, atau perbualan santai harian).
+  4. Auto-detect Language: Kesan bahasa input Hakim secara automatik (249+ bahasa). Balas dalam bahasa yang digunakan oleh Hakim dengan tatabahasa yang tepat dan natural.
+  5. Konteks Dokumen Semasa: Berikut ialah data dokumen perniagaan yang ada dalam sistem: ${docsContext}.
+  6. JIKA Hakim meminta ringkasan/laporan bagi tarikh atau kategori tertentu: Berikan respon lisan ringkas untuk dibacakan oleh TTS, dan pastikan anda menyentuh ringkasan, pandangan, penyelesaian dan cadangan yang bernas untuk perniagaan Hakim.
+  7. Format Lisan TTS: Elakkan simbol Markdown seperti asterisks (*), dash (-), pagar (#), atau format kod supaya bacaan audio berjalan dengan lancar dan natural.`;
 
   try {
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -677,18 +671,6 @@ app.post("/api/mail/send-resend", async (req, res) => {
   }
 });
 
-const server = app.listen(PORT, HOST, () => {
-  console.log(`Kak Nadiah Orbyte Copilot beroperasi di http://${HOST}:${PORT}`);
-});
-
-process.on("SIGINT", () => {
-  server.close(() => process.exit(0));
-});
-
-process.on("SIGTERM", () => {
-  server.close(() => process.exit(0));
-});
-
 // 15. Endpoint Penterjemah UI Dinamik (Menyelesaikan Ralat Penterjemah)
 app.post("/api/translate/ui", async (req, res) => {
   const { targetLanguage, sourceTexts, clientApiKey } = req.body;
@@ -729,7 +711,30 @@ ${JSON.stringify(sourceTexts)}`;
     res.json({ success: true, translations: translatedDict });
   } catch (err) {
     console.error("Ralat endpoint terjemahan UI:", err);
-    // Sentiasa pulangkan success: true dengan teks asal agar pelayar tidak memaparkan 'Ralat sambungan'
     res.json({ success: true, translations: sourceTexts });
+  }
+});
+
+// ============================================================================
+// PELANCARAN PELAYAR (DILETAKKAN DI BARIS TERAKHIR SEKALI)
+// ============================================================================
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Kak Nadiah Orbyte Copilot beroperasi di http://${HOST}:${PORT}`);
+});
+
+process.on("SIGINT", () => {
+  server.close(() => process.exit(0));
+});
+
+process.on("SIGTERM", () => {
+  server.close(() => process.exit(0));
+});
+// Endpoint untuk mengosongkan sejarah chat
+app.post("/api/chat/clear", (req, res) => {
+  try {
+    fs.writeFileSync(CHAT_HISTORY_FILE, JSON.stringify([]));
+    res.json({ success: true, message: "Sejarah chat berjaya dikosongkan." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Gagal mengosongkan fail." });
   }
 });
