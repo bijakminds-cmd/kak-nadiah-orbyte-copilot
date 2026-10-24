@@ -16,6 +16,15 @@
 
 ---
 
+## ☁️ Deployment & Replit Environment Verification
+The prototype is fully configured, built, and executed on Replit containerized cloud runner.
+
+![Replit Environment Verification](./replit-proof.png)
+
+- 🌐 **Live Deployed Prototype (Replit):** https://590b068c-dd0e-4e78-9e04-78baeb87c670-00-3ttbi7c4xh6it.sisko.replit.dev/
+
+---
+
 ## 📌 Project Overview
 **Kak Nadiah** is an AI-powered smart copilot tailored specifically for Micro and Small-and-Medium Enterprises (MSMEs). It integrates advanced multimodal reasoning, automated document processing, local language accessibility, and strict governance to streamline daily SME operations, financial auditing, and LHDN e-invoicing compliance.
 
