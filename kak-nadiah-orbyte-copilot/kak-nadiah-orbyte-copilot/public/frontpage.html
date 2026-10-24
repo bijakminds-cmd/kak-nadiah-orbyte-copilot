@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="ms" class="bg-amber-50 dark:bg-[#0b0f19] w-full min-h-screen">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kak Nadiah - Orbyte Smart SME Copilot</title>
+
+    <script>
+      if (localStorage.getItem("temaPortal") === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .comic-card {
+        border: 4px solid #000000;
+        box-shadow: 6px 6px 0px 0px #000000;
+      }
+      .comic-card-sm {
+        border: 3px solid #000000;
+        box-shadow: 4px 4px 0px 0px #000000;
+      }
+      .comic-btn {
+        border: 3px solid #000000;
+        box-shadow: 4px 4px 0px 0px #000000;
+        transition: all 0.15s ease;
+      }
+      .comic-btn:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0px 0px #000000;
+      }
+      .comic-btn:active:not(:disabled) {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0px 0px #000000;
+      }
+
+      /* Sesuaikan widget Google Translate supaya kemas & gaya Neo-Brutalism */
+      .goog-te-gadget {
+        font-family: "Plus Jakarta Sans", sans-serif !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+      }
+      .goog-te-gadget .goog-te-combo {
+        padding: 6px 10px !important;
+        border: 2px solid #000000 !important;
+        border-radius: 10px !important;
+        font-weight: 800 !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        outline: none !important;
+      }
+      .goog-logo-link,
+      .goog-te-gadget span {
+        display: none !important;
+      }
+      body {
+        top: 0px !important;
+      }
+      .skiptranslate iframe {
+        display: none !important;
+      }
+    </style>
+
+    <!-- Skrip Rasmi Google Translate Web Plugin untuk 249+ Bahasa Terus Dalam Laman -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: "ms",
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          "google_translate_element",
+        );
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    ></script>
+  </head>
+  <body
+    class="bg-amber-50 text-slate-950 dark:bg-[#0b0f19] dark:text-slate-100 min-h-screen w-full flex flex-col justify-between selection:bg-pink-500 selection:text-white overflow-x-hidden"
+  >
+    <!-- ================= NAVBAR LEBAR PENUH SKRIN ================= -->
+    <nav
+      class="sticky top-0 z-40 bg-white dark:bg-[#0f172a] border-b-4 border-black w-full px-6 lg:px-12 py-3.5 shadow-sm transition-colors duration-200"
+    >
+      <div class="w-full flex flex-wrap justify-between items-center gap-4">
+        <!-- LOGO & JENAMA -->
+        <div class="flex items-center space-x-3.5">
+          <div
+            class="w-12 h-12 rounded-2xl bg-pink-600 border-3 border-black flex items-center justify-center text-white font-black text-2xl shadow-[3px_3px_0px_#000]"
+          >
+            N
+          </div>
+          <div>
+            <h1
+              class="text-base sm:text-xl font-black tracking-tight text-slate-950 dark:text-white leading-none"
+            >
+              BIJAK MINDS &bull; KAK NADIAH
+            </h1>
+            <p
+              class="text-[11px] font-black text-pink-600 dark:text-pink-400 tracking-wider uppercase mt-1"
+              data-i18n="nav_subheading"
+            >
+              Orbyte SME Copilot &bull; Domain 2 SDC 2026
+            </p>
+          </div>
+        </div>
+
+        <!-- KANAN: PEMILIH 249+ BAHASA, STATUS, SUIS TEMA & BUTANG LOGIN -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <!-- PEMILIH BAHASA PANTAS -->
+          <div class="relative flex items-center">
+            <select
+              id="uiLanguageSelect"
+              onchange="tukarBahasaUI(this.value)"
+              class="comic-btn h-11 px-3 bg-white dark:bg-slate-900 text-slate-950 dark:text-white font-black text-xs uppercase rounded-xl cursor-pointer focus:outline-none"
+            >
+              <option value="ms">🇲🇾 Melayu</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="zh">🇨🇳 中文</option>
+              <option value="ta">🇮🇳 தமிழ்</option>
+              <option value="ar">🇸🇦 العربية</option>
+              <option value="ja">🇯🇵 日本語</option>
+              <option value="ko">🇰🇷 한국어</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="id">🇮🇩 Indonesia</option>
+              <option value="custom">🌐 249+ Bahasa...</option>
+            </select>
+          </div>
+
+          <!-- LENCANA ORBYTE READY -->
+          <span
+            class="hidden md:flex text-xs bg-emerald-300 text-black px-3.5 py-2 rounded-xl font-black uppercase border-2 border-black shadow-[2px_2px_0px_#000] items-center gap-1.5"
+          >
+            <i class="fa-solid fa-link text-xs"></i>
+            <span data-i18n="badge_orbyte">Orbyte Synced</span>
+          </span>
+
+          <!-- SUIS TEMA GELAP/TERANG -->
+          <button
+            type="button"
+            id="btnTema"
+            onclick="toggleTema()"
+            title="Tukar Tema Siang/Malam"
+            class="comic-btn w-11 h-11 bg-yellow-400 dark:bg-slate-800 rounded-xl flex items-center justify-center cursor-pointer"
+          >
+            <i
+              id="ikonTema"
+              class="fas fa-moon text-base text-black dark:text-yellow-400"
+            ></i>
+          </button>
+
+          <!-- BUTANG PORTAL MAJIKAN (2FA) -->
+          <button
+            onclick="openModalLogin()"
+            class="comic-btn px-5 py-2.5 bg-pink-600 hover:bg-pink-500 text-white text-xs font-black uppercase rounded-xl flex items-center gap-2 cursor-pointer shadow-[3px_3px_0px_#000]"
+          >
+            <i class="fa-solid fa-lock text-xs"></i>
+            <span data-i18n="btn_login_2fa">Portal Majikan (2FA)</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= HERO SECTION LEBAR PENUH SKRIN ================= -->
+    <main
+      class="w-full px-6 lg:px-14 xl:px-20 py-10 lg:py-16 flex-grow flex flex-col justify-center items-center text-center space-y-8"
+    >
+      <!-- COGAN KATA / BADGE -->
+      <div
+        class="inline-block px-4 py-2 bg-yellow-300 text-black text-xs sm:text-sm font-black uppercase rounded-xl border-3 border-black shadow-[3px_3px_0px_#000] transform -rotate-1"
+      >
+        ⚡
+        <span data-i18n="hero_tagline"
+          >"Kurang Kerja Lewah, Bisnes Lebih Laju"</span
+        >
+      </div>
+
+      <!-- TAJUK UTAMA -->
+      <h2
+        class="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-slate-950 dark:text-white tracking-tight uppercase leading-tight max-w-5xl mx-auto"
+        data-i18n="hero_title"
+      >
+        Selesaikan Invois &amp; Pematuhan e-Invois Tanpa Pening Kepala.
+      </h2>
+
+      <!-- PENERANGAN -->
+      <p
+        class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-slate-700 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed"
+        data-i18n="hero_desc"
+      >
+        Kak Nadiah mengimbas invois pembekal, mengesan kenaikan harga tidak sah,
+        merangka e-Invois LHDN, dan menghubungkan data terus ke ekosistem Orbyte
+        di bawah kawalan manusia sepenuhnya.
+      </p>
+
+      <!-- NOTIS PANDUAN CIRI TRANSLATE PELAYAR & WIDGET 249+ BAHASA -->
+      <div class="w-full max-w-4xl mx-auto px-2">
+        <div
+          class="comic-card-sm bg-cyan-100 dark:bg-slate-900 border-2 border-black p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-bold shadow-[3px_3px_0px_#000]"
+        >
+          <div
+            class="flex items-center gap-3 text-slate-900 dark:text-slate-100 text-left"
+          >
+            <span
+              class="w-9 h-9 rounded-xl bg-cyan-400 text-black border-2 border-black flex items-center justify-center text-base shrink-0 shadow-[1px_1px_0px_#000]"
+            >
+              <i class="fa-solid fa-language"></i>
+            </span>
+            <div>
+              <span
+                class="text-[10px] font-black uppercase text-pink-600 dark:text-pink-400 block leading-none"
+                data-i18n="tip_heading"
+              >
+                Ciri Penterjemahan Pelayar Web (249+ Bahasa):
+              </span>
+              <p
+                class="text-[11px] text-slate-700 dark:text-slate-300 mt-1 leading-snug"
+                data-i18n="tip_text"
+              >
+                Gunakan ikon <strong>Translate pelayar</strong> pada bar carian,
+                klik kanan tetikus &rarr; <em>Translate</em>, atau pilih bahasa
+                terus melalui menu pelayar di sebelah kanan.
+              </p>
+            </div>
+          </div>
+
+          <!-- KAWASAN WIDGET TRANSLATE TERBINA ATAU PANDUAN KLIK KANAN -->
+          <div class="flex items-center gap-2 shrink-0">
+            <!-- Widget Terjemahan Terbina Dalam Skrin -->
+            <div id="google_translate_element" class="inline-block"></div>
+
+            <!-- Butang Bantuan Paparan Panduan Pelayar -->
+            <button
+              type="button"
+              onclick="showBrowserTranslateGuide()"
+              class="comic-btn px-3.5 py-2 bg-yellow-300 hover:bg-yellow-400 text-black text-[11px] font-black uppercase rounded-xl flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000]"
+              title="Ketahui cara aktifkan Translate pelayar"
+            >
+              <i class="fa-solid fa-circle-question"></i>
+              <span>Cara Translate Pelayar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KAD 3 CIRI UTAMA -->
+      <div
+        class="w-full grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 text-left pt-2 max-w-7xl mx-auto"
+      >
+        <!-- KAD 1 -->
+        <div
+          class="comic-card bg-white dark:bg-slate-900 p-6 lg:p-8 rounded-3xl space-y-3.5 transform transition hover:-translate-y-1"
+        >
+          <div
+            class="w-14 h-14 rounded-2xl bg-indigo-400 border-3 border-black text-slate-950 flex items-center justify-center font-black text-2xl shadow-[3px_3px_0px_#000]"
+          >
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <h3
+            class="font-black text-base lg:text-lg text-slate-950 dark:text-white uppercase"
+            data-i18n="card_1_title"
+          >
+            AutoProcure Invois
+          </h3>
+          <p
+            class="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 leading-relaxed"
+            data-i18n="card_1_desc"
+          >
+            Imbas resit dan kesan percanggahan harga pembekal serta-merta
+            melalui Gemini AI.
+          </p>
+        </div>
+
+        <!-- KAD 2 -->
+        <div
+          class="comic-card bg-white dark:bg-slate-900 p-6 lg:p-8 rounded-3xl space-y-3.5 transform transition hover:-translate-y-1"
+        >
+          <div
+            class="w-14 h-14 rounded-2xl bg-pink-500 border-3 border-black text-white flex items-center justify-center font-black text-2xl shadow-[3px_3px_0px_#000]"
+          >
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <h3
+            class="font-black text-base lg:text-lg text-slate-950 dark:text-white uppercase"
+            data-i18n="card_2_title"
+          >
+            Sedia e-Invois LHDN
+          </h3>
+          <p
+            class="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 leading-relaxed"
+            data-i18n="card_2_desc"
+          >
+            Jana e-Invois patuh format bersama kod QR pengesahan MyInvois dan
+            simulasi bayaran segera.
+          </p>
+        </div>
+
+        <!-- KAD 3 -->
+        <div
+          class="comic-card bg-white dark:bg-slate-900 p-6 lg:p-8 rounded-3xl space-y-3.5 transform transition hover:-translate-y-1"
+        >
+          <div
+            class="w-14 h-14 rounded-2xl bg-amber-400 border-3 border-black text-black flex items-center justify-center font-black text-2xl shadow-[3px_3px_0px_#000]"
+          >
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3
+            class="font-black text-base lg:text-lg text-slate-950 dark:text-white uppercase"
+            data-i18n="card_3_title"
+          >
+            Human-in-the-Loop
+          </h3>
+          <p
+            class="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 leading-relaxed"
+            data-i18n="card_3_desc"
+          >
+            Tiada bayaran atau selarasan berlaku tanpa pengesahan 2FA Google
+            Authenticator majikan.
+          </p>
+        </div>
+      </div>
+
+      <!-- BUTANG SERUAN BERTINDAK (CTA) -->
+      <div class="pt-6 pb-4">
+        <button
+          onclick="openModalLogin()"
+          class="comic-btn px-9 py-4 bg-yellow-300 hover:bg-yellow-400 text-slate-950 font-black text-base lg:text-lg uppercase rounded-2xl shadow-[5px_5px_0px_#000] cursor-pointer inline-flex items-center gap-3"
+        >
+          <span data-i18n="btn_cta_dashboard"
+            >Buka Dashboard Eksekutif Kak Nadiah</span
+          >
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </main>
+
+    <!-- ================= MODAL LOGIN 2FA MAJIKAN ================= -->
+    <div
+      id="modalLogin"
+      class="fixed inset-0 bg-black/70 backdrop-blur-xs hidden items-center justify-center p-4 z-50"
+    >
+      <div
+        class="comic-card bg-white dark:bg-slate-900 max-w-sm sm:max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-5 text-slate-950 dark:text-white relative"
+      >
+        <div
+          class="flex justify-between items-center border-b-4 border-black pb-3"
+        >
+          <h3
+            class="font-black text-sm sm:text-base uppercase flex items-center gap-2"
+          >
+            <i class="fa-solid fa-lock text-pink-600"></i>
+            <span data-i18n="modal_login_title"
+              >Pengesahan Keselamatan 2FA</span
+            >
+          </h3>
+          <button
+            onclick="closeModalLogin()"
+            class="comic-btn w-8 h-8 rounded-lg bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center text-xs font-black cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm font-bold">
+          <div>
+            <label
+              class="block uppercase text-slate-700 dark:text-slate-300 mb-1"
+              data-i18n="lbl_password"
+              >Kata Laluan Majikan</label
+            >
+            <input
+              type="password"
+              id="inputPass"
+              value="admin123"
+              class="w-full p-3 border-2 border-black rounded-xl bg-slate-50 dark:bg-slate-950 font-bold focus:outline-none focus:bg-yellow-100"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block uppercase text-slate-700 dark:text-slate-300 mb-1"
+              data-i18n="lbl_otp"
+              >Kod 6-Digit Google Authenticator</label
+            >
+            <input
+              type="text"
+              id="inputOtp"
+              maxlength="6"
+              placeholder="000000"
+              class="w-full p-3 border-2 border-black rounded-xl bg-slate-50 dark:bg-slate-950 text-center tracking-widest font-mono text-lg font-black focus:outline-none focus:bg-yellow-100"
+            />
+          </div>
+
+          <button
+            onclick="submitLogin()"
+            class="comic-btn w-full py-3.5 bg-emerald-400 hover:bg-emerald-300 text-black font-black uppercase text-xs sm:text-sm rounded-xl cursor-pointer shadow-[3px_3px_0px_#000]"
+            data-i18n="btn_submit_login"
+          >
+            Sahkan &amp; Masuk Dashboard
+          </button>
+
+          <div class="text-center pt-1">
+            <a
+              href="#"
+              onclick="show2FASetup()"
+              class="text-[11px] font-bold text-pink-600 dark:text-pink-400 underline hover:text-pink-500"
+              data-i18n="link_scan_qr"
+            >
+              Belum imbas kod QR 2FA? Klik di sini
+            </a>
+          </div>
+        </div>
+
+        <!-- KAWASAN PAPARAN QR CODE SETUP 2FA -->
+        <div
+          id="qrArea"
+          class="hidden text-center p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border-2 border-black space-y-2"
+        >
+          <p
+            class="text-[11px] font-bold text-slate-600 dark:text-slate-400"
+            data-i18n="qr_instruction"
+          >
+            Imbas kod ini guna aplikasi Google Authenticator di telefon Hakim:
+          </p>
+          <div class="p-2 bg-white rounded-xl border border-black inline-block">
+            <img
+              id="qrImage"
+              src=""
+              class="w-36 h-36 mx-auto"
+              alt="2FA Setup QR Code"
+            />
+          </div>
+          <p
+            class="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400"
+            id="manualSecretKey"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FOOTER LEBAR PENUH SKRIN ================= -->
+    <footer
+      class="bg-white dark:bg-slate-900 border-t-4 border-black w-full px-6 lg:px-12 py-4 text-center text-xs font-black uppercase text-slate-700 dark:text-slate-400 mt-12"
+    >
+      <div
+        class="w-full flex flex-col sm:flex-row justify-between items-center gap-2"
+      >
+        <span>&copy; 2026 BIJAK MINDS &bull; ORBYTE SME COPILOT</span>
+        <span class="text-[11px] text-pink-600 dark:text-pink-400 font-bold">
+          SDC Hackathon 2026 &bull; Rakan Rasmi: AlphaRed (Orbyte) &amp; Replit
+        </span>
+      </div>
+    </footer>
+
+    <!-- ================= ENJIN PENTERJEMAH & SKRIP LOGIK ================= -->
+    <script>
+      // 1. PENGENDALIAN TEMA DARK/LIGHT
+      function kemaskiniIkonTema() {
+        const isDark = document.documentElement.classList.contains("dark");
+        const ikon = document.getElementById("ikonTema");
+        if (ikon) {
+          ikon.className = isDark
+            ? "fas fa-sun text-base text-yellow-400"
+            : "fas fa-moon text-base text-black";
+        }
+      }
+
+      function toggleTema() {
+        document.documentElement.classList.toggle("dark");
+        const isDark = document.documentElement.classList.contains("dark");
+        localStorage.setItem("temaPortal", isDark ? "dark" : "light");
+        kemaskiniIkonTema();
+      }
+
+      // 2. MODAL & 2FA LOGIN
+      function openModalLogin() {
+        const modal = document.getElementById("modalLogin");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.getElementById("inputOtp").focus();
+      }
+
+      function closeModalLogin() {
+        const modal = document.getElementById("modalLogin");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      async function show2FASetup() {
+        try {
+          const res = await fetch("/api/auth/setup-2fa");
+          const data = await res.json();
+          if (data.success) {
+            document.getElementById("qrImage").src = data.qrImageUrl;
+            document.getElementById("manualSecretKey").innerText =
+              "Kunci: " + (data.manualKey || "JBSWY3DPEHPK3PXP");
+            document.getElementById("qrArea").classList.remove("hidden");
+          }
+        } catch (err) {
+          alert("Gagal memuatkan kod 2FA daripada pelayan.");
+        }
+      }
+
+      async function submitLogin() {
+        const password = document.getElementById("inputPass").value;
+        const otpToken = document.getElementById("inputOtp").value.trim();
+
+        if (!otpToken)
+          return alert("Sila masukkan kod 6-digit Google Authenticator!");
+
+        try {
+          const res = await fetch("/api/auth/login-admin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password, otpToken }),
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            sessionStorage.setItem("kak_nadiah_admin_token", data.adminToken);
+            window.location.href = "/admin";
+          } else {
+            alert(data.message || "Gagal log masuk!");
+          }
+        } catch (err) {
+          alert("Ralat sambungan ke pelayan.");
+        }
+      }
+
+      // 3. PANDUAN PENTERJEMAHAN CIRI PELAYAR WEB (CHROME / EDGE / SAFARI)
+      function showBrowserTranslateGuide() {
+        alert(
+          "🌐 CARA MENGGUNAKAN CIRI TRANSLATE PELAYAR ANDA:\n\n" +
+            "1. Perhatikan bahagian kanan bar carian URL atas laptop anda — klik pada ikon kecil 'Translate' (ikon Google Translate).\n" +
+            "2. ATAU klik kanan di mana-mana ruang kosong laman ini, kemudian pilih 'Translate to English' (atau bahasa anda).\n" +
+            "3. Klik ikon tiga titik (...) pada tetingkap popup tersebut dan pilih 'Choose another language' untuk memilih daripada lebih 249+ bahasa dunia!",
+        );
+      }
+
+      // 4. KAMUS PANTAS TEMPATAN (11 BAHASA POPULAR)
+      const i18nTranslations = {
+        ms: {
+          nav_subheading: "Orbyte SME Copilot • Domain 2 SDC 2026",
+          badge_orbyte: "Orbyte Synced",
+          btn_login_2fa: "Portal Majikan (2FA)",
+          hero_tagline: '"Kurang Kerja Lewah, Bisnes Lebih Laju"',
+          hero_title:
+            "Selesaikan Invois & Pematuhan e-Invois Tanpa Pening Kepala.",
+          hero_desc:
+            "Kak Nadiah mengimbas invois pembekal, mengesan kenaikan harga tidak sah, merangka e-Invois LHDN, dan menghubungkan data terus ke ekosistem Orbyte di bawah kawalan manusia sepenuhnya.",
+          tip_heading: "Ciri Penterjemahan Pelayar Web (249+ Bahasa):",
+          tip_text:
+            "Gunakan ikon Translate pelayar pada bar carian, klik kanan tetikus → Translate, atau pilih bahasa terus melalui menu pelayar di sebelah kanan.",
+          card_1_title: "AutoProcure Invois",
+          card_1_desc:
+            "Imbas resit dan kesan percanggahan harga pembekal serta-merta melalui Gemini AI.",
+          card_2_title: "Sedia e-Invois LHDN",
+          card_2_desc:
+            "Jana e-Invois patuh format bersama kod QR pengesahan MyInvois dan simulasi bayaran segera.",
+          card_3_title: "Human-in-the-Loop",
+          card_3_desc:
+            "Tiada bayaran atau selarasan berlaku tanpa pengesahan 2FA Google Authenticator majikan.",
+          btn_cta_dashboard: "Buka Dashboard Eksekutif Kak Nadiah",
+          modal_login_title: "Pengesahan Keselamatan 2FA",
+          lbl_password: "Kata Laluan Majikan",
+          lbl_otp: "Kod 6-Digit Google Authenticator",
+          btn_submit_login: "Sahkan & Masuk Dashboard",
+          link_scan_qr: "Belum imbas kod QR 2FA? Klik di sini",
+          qr_instruction:
+            "Imbas kod ini guna aplikasi Google Authenticator di telefon Hakim:",
+        },
+        en: {
+          nav_subheading: "Orbyte SME Copilot • Domain 2 SDC 2026",
+          badge_orbyte: "Orbyte Synced",
+          btn_login_2fa: "Employer Portal (2FA)",
+          hero_tagline: '"Less Busywork, Faster Business"',
+          hero_title: "Effortless Invoices & e-Invoice Compliance.",
+          hero_desc:
+            "Kak Nadiah scans vendor invoices, detects price discrepancy, drafts LHDN e-Invoices, and syncs data to Orbyte under full human supervision.",
+          tip_heading: "Browser Translation Feature (249+ Languages):",
+          tip_text:
+            "Use the browser's Translate icon on the search bar, right-click → Translate, or select your preferred language directly using the widget on the right.",
+          card_1_title: "AutoProcure Audit",
+          card_1_desc:
+            "Scan receipts and detect unauthorized vendor price hikes instantly with Gemini AI.",
+          card_2_title: "LHDN e-Invoice Ready",
+          card_2_desc:
+            "Generate compliant e-Invoices with MyInvois verification QR codes & instant payment simulation.",
+          card_3_title: "Human-in-the-Loop",
+          card_3_desc:
+            "No disbursement or synchronization happens without Google Authenticator 2FA approval.",
+          btn_cta_dashboard: "Launch Kak Nadiah Executive Dashboard",
+          modal_login_title: "2FA Security Verification",
+          lbl_password: "Employer Password",
+          lbl_otp: "6-Digit Google Authenticator Code",
+          btn_submit_login: "Verify & Enter Dashboard",
+          link_scan_qr: "Haven't scanned 2FA QR code? Click here",
+          qr_instruction:
+            "Scan this QR code using Google Authenticator on your phone:",
+        },
+        zh: {
+          nav_subheading: "Orbyte 中小企业智能副驾驶 • SDC 2026",
+          badge_orbyte: "Orbyte 已同步",
+          btn_login_2fa: "雇主门户 (2FA)",
+          hero_tagline: "“减少冗余工序，加速企业成长”",
+          hero_title: "轻松解决发票审核与电子发票合规难题。",
+          hero_desc:
+            "Kak Nadiah 扫描供应商发票，精准识别违规涨价，拟定符合 LHDN 标准的电子发票，并在人工全权掌控下无缝同步数据至 Orbyte。",
+          tip_heading: "浏览器原生翻译功能（249+ 语言）：",
+          tip_text:
+            "使用地址栏上的翻译图标，或右键单击页面选择“翻译”，亦可直接使用右侧小部件切换语言。",
+          card_1_title: "AutoProcure 智能采购",
+          card_1_desc: "秒级扫描收据，利用 Gemini AI 即时侦测供应商价格异常。",
+          card_2_title: "LHDN 电子发票就绪",
+          card_2_desc:
+            "生成符合格式的电子发票，附带 MyInvois 验证二维码及即时付款模拟。",
+          card_3_title: "人工监管机制",
+          card_3_desc:
+            "未经雇主 Google Authenticator 2FA 安全确认，绝不执行任何付款或对账。",
+          btn_cta_dashboard: "打开 Kak Nadiah 执行管理仪表板",
+          modal_login_title: "2FA 双重身份验证",
+          lbl_password: "雇主访问密码",
+          lbl_otp: "Google Authenticator 6位验证码",
+          btn_submit_login: "确认并进入仪表板",
+          link_scan_qr: "尚未扫描 2FA 二维码？点击此处",
+          qr_instruction:
+            "请使用手机上的 Google Authenticator 应用扫描此二维码：",
+        },
+        ta: {
+          nav_subheading: "Orbyte SME Copilot • SDC 2026",
+          badge_orbyte: "Orbyte Synced",
+          btn_login_2fa: "முதலாளி போர்டல் (2FA)",
+          hero_tagline: '"குறைந்த சுமை, வேகமான வணிகம்"',
+          hero_title:
+            "விலைப்பட்டியல் மற்றும் இ-இன்வாய்ஸ் இணக்கத்தை எளிதாக்குங்கள்.",
+          hero_desc:
+            "சப்ளையர் விலைப்பட்டியல்களை ஸ்கேன் செய்து, விலை முரண்பாடுகளைக் கண்டறிந்து, LHDN இ-இன்வாய்ஸ்களை உருவாக்குகிறது.",
+          tip_heading: "உலாவி மொழிபெயர்ப்பு வசதி (249+ மொழிகள்):",
+          tip_text:
+            "முகவரிப் பட்டியில் உள்ள மொழிபெயர்ப்பு ஐகானைப் பயன்படுத்தவும் அல்லது வலது கிளிக் செய்து மொழிபெயர்க்கவும்.",
+          card_1_title: "AutoProcure தணிக்கை",
+          card_1_desc:
+            "Gemini AI மூலம் சப்ளையர் விலை மாற்றங்களை உடனடியாகக் கண்டறியவும்.",
+          card_2_title: "LHDN இ-இன்வாய்ஸ் தயார்",
+          card_2_desc:
+            "MyInvois சரிபார்ப்பு QR குறியீட்டுடன் இ-இன்வாய்ஸ்களை உருவாக்கவும்.",
+          card_3_title: "மனித மேற்பார்வை",
+          card_3_desc: "2FA அங்கீகாரம் இல்லாமல் எந்த பரிவர்த்தனையும் நடக்காது.",
+          btn_cta_dashboard: "Kak Nadiah டாஷ்போர்டைத் திறக்கவும்",
+          modal_login_title: "2FA பாதுகாப்பு சரிபார்ப்பு",
+          lbl_password: "கடவுச்சொல்",
+          lbl_otp: "6-இலக்க 2FA குறியீடு",
+          btn_submit_login: "சரிபார்த்து நுழையவும்",
+          link_scan_qr:
+            "QR குறியீட்டை ஸ்கேன் செய்யவில்லையா? இங்கே கிளிக் செய்யவும்",
+          qr_instruction:
+            "Google Authenticator பயன்பாட்டில் இந்த QR குறியீட்டை ஸ்கேன் செய்யவும்:",
+        },
+        ar: {
+          nav_subheading: "Orbyte مساعد الأعمال الذكي • SDC 2026",
+          badge_orbyte: "متزامن مع Orbyte",
+          btn_login_2fa: "بوابة الإدارة (2FA)",
+          hero_tagline: '"عمل أسهل، تجارة أسرع"',
+          hero_title: "إدارة الفواتير والامتثال الضريبي بكل سلاسة.",
+          hero_desc:
+            "تقوم كاك نادية بمسح فواتير الموردين، واكتشاف فروقات الأسعار، وإعداد الفواتير المتوافقة مع معايير LHDN بموافقة بشرية كاملة.",
+          tip_heading: "ميزة ترجمة المتصفح المدمجة (أكثر من 249 لغة):",
+          tip_text:
+            "استخدم أيقونة الترجمة في شريط العناوين أو انقر بزر الفأرة الأيمن واختر 'ترجمة' لتحويل الصفحة لأي لغة ترغب بها.",
+          card_1_title: "AutoProcure الذكي",
+          card_1_desc:
+            "اكتشف الزيادات غير المصرح بها في الأسعار فوراً عبر Gemini AI.",
+          card_2_title: "الفاتورة الإلكترونية LHDN",
+          card_2_desc: "إصدار فواتير ضريبية معتمدة مع رمز QR والتحقق الفوري.",
+          card_3_title: "إشراف بشري كامل",
+          card_3_desc: "لا تتم أي معالجة مالية بدون تأكيد التحقق الثنائي 2FA.",
+          btn_cta_dashboard: "فتح لوحة تحكم كاك نادية",
+          modal_login_title: "التحقق الأمني الثنائي 2FA",
+          lbl_password: "كلمة مرور المسؤول",
+          lbl_otp: "رمز التحقق المكون من 6 أرقام",
+          btn_submit_login: "تأكيد والدخول للوحة التحكم",
+          link_scan_qr: "لم تمسح رمز QR بعد؟ اضغط هنا",
+          qr_instruction: "امسح هذا الرمز باستخدام تطبيق Google Authenticator:",
+        },
+        ja: {
+          nav_subheading: "Orbyte 中小企業向けAI副操縦士 • SDC 2026",
+          badge_orbyte: "Orbyte 連携済",
+          btn_login_2fa: "管理者ポータル (2FA)",
+          hero_tagline: "「無駄な作業を省き、ビジネスを加速」",
+          hero_title: "請求書照合と電子インボイス対応をストレスフリーに。",
+          hero_desc:
+            "Kak Nadiahが仕入請求書をスキャンし、価格差を検知。LHDN電子インボイスを作成し、完全な人間主導でOrbyteに同期します。",
+          tip_heading: "ブラウザ標準翻訳機能（249以上の言語）：",
+          tip_text:
+            "URL検索バーにある翻訳アイコンをクリックするか、画面上で右クリックして「翻訳」を選択してください。",
+          card_1_title: "AutoProcure 照合",
+          card_1_desc:
+            "Gemini AIにより仕入先の不当な値上げを瞬時に検出します。",
+          card_2_title: "LHDN 電子インボイス対応",
+          card_2_desc:
+            "MyInvois認証QRコード付きの規格適合インボイスを発行します。",
+          card_3_title: "ヒューマン・イン・ザ・ループ",
+          card_3_desc:
+            "Google Authenticatorによる2FA認証なしに処理は実行されません。",
+          btn_cta_dashboard: "Kak Nadiah ダッシュボードを開く",
+          modal_login_title: "2FA 二要素認証",
+          lbl_password: "管理者パスワード",
+          lbl_otp: "6桁の認証コード",
+          btn_submit_login: "認証してログイン",
+          link_scan_qr: "QRコードをまだ登録していませんか？ここをクリック",
+          qr_instruction:
+            "スマホのGoogle AuthenticatorでこのQRコードを読み取ってください：",
+        },
+        ko: {
+          nav_subheading: "Orbyte 중소기업 스마트 코파일럿 • SDC 2026",
+          badge_orbyte: "Orbyte 연동됨",
+          btn_login_2fa: "관리자 포털 (2FA)",
+          hero_tagline: '"번거로운 작업은 줄이고, 성장은 빠르게"',
+          hero_title: "송장 관리 및 전자세금계산서 발행을 한 번에 해결하세요.",
+          hero_desc:
+            "Kak Nadiah가 공급업체 송장을 분석하고 가격 인상을 감지하며, LHDN 규격 전자송장을 생성하여 안전하게 Orbyte에 동기화합니다.",
+          tip_heading: "웹 브라우저 자체 번역 기능 (249개 이상 언어):",
+          tip_text:
+            "주소창의 번역 아이콘을 클릭하거나 마우스 우클릭 후 '한국어로 번역'을 선택하여 원하는 언어로 즉시 열람하실 수 있습니다.",
+          card_1_title: "AutoProcure 자동 검수",
+          card_1_desc: "Gemini AI를 통해 공급처 가격 변동을 즉시 파악합니다.",
+          card_2_title: "LHDN 전자송장 준비 완료",
+          card_2_desc:
+            "MyInvois 검증 QR 코드가 포함된 표준 전자송장을 자동 생성합니다.",
+          card_3_title: "사람 중심 보안 통제",
+          card_3_desc:
+            "관리자의 2FA Google OTP 인증 없이는 어떠한 결제도 승인되지 않습니다.",
+          btn_cta_dashboard: "Kak Nadiah 대시보드 바로가기",
+          modal_login_title: "2FA 보안 인증",
+          lbl_password: "관리자 비밀번호",
+          lbl_otp: "6자리 Google OTP 번호",
+          btn_submit_login: "인증 후 대시보드 입장",
+          link_scan_qr: "2FA QR 코드를 등록하지 않으셨나요? 여기 클릭",
+          qr_instruction:
+            "스마트폰의 Google Authenticator 앱으로 QR 코드를 스캔하세요:",
+        },
+        fr: {
+          nav_subheading: "Copilote PME Intelligent Orbyte • SDC 2026",
+          badge_orbyte: "Synchronisé avec Orbyte",
+          btn_login_2fa: "Portail Employeur (2FA)",
+          hero_tagline: '"Moins de corvées, un commerce plus rapide"',
+          hero_title: "Gérez vos factures et l'e-Invoicing en toute sérénité.",
+          hero_desc:
+            "Kak Nadiah analyse les factures fournisseurs, détecte les hausses de prix, génère des factures conformes LHDN et synchronise les données sur Orbyte sous contrôle humain.",
+          tip_heading: "Fonction de traduction du navigateur (249+ langues) :",
+          tip_text:
+            "Utilisez l'icône Traduire dans la barre d'adresse ou faites un clic droit → Traduire pour afficher la page dans votre langue.",
+          card_1_title: "Audit AutoProcure",
+          card_1_desc:
+            "Scannez vos reçus et détectez instantanément les écarts de prix grâce à l'IA Gemini.",
+          card_2_title: "Conformité e-Facture LHDN",
+          card_2_desc:
+            "Générez des factures électroniques conformes avec QR code MyInvois et simulation de paiement.",
+          card_3_title: "Contrôle Humain (2FA)",
+          card_3_desc:
+            "Aucune transaction n'a lieu sans validation préalable par Google Authenticator.",
+          btn_cta_dashboard: "Ouvrir le Tableau de Bord Kak Nadiah",
+          modal_login_title: "Vérification de Sécurité 2FA",
+          lbl_password: "Mot de passe employeur",
+          lbl_otp: "Code à 6 chiffres Google Authenticator",
+          btn_submit_login: "Valider et Accéder",
+          link_scan_qr: "Code QR non scanné ? Cliquez ici",
+          qr_instruction:
+            "Scannez ce QR code avec l'application Google Authenticator :",
+        },
+        de: {
+          nav_subheading: "Orbyte Smart KMU Copilot • SDC 2026",
+          badge_orbyte: "Orbyte Synchronisiert",
+          btn_login_2fa: "Arbeitgeber-Portal (2FA)",
+          hero_tagline: '"Weniger Routine, schnelleres Wachstum"',
+          hero_title: "Rechnungen & E-Rechnungs-Compliance mühelos bewältigen.",
+          hero_desc:
+            "Kak Nadiah prüft Lieferantenrechnungen, erkennt Preiserhöhungen, erstellt konforme LHDN E-Rechnungen und synchronisiert alles sicher mit Orbyte.",
+          tip_heading: "Browser-Übersetzungsfunktion (249+ Sprachen):",
+          tip_text:
+            "Nutzen Sie das Übersetzungs-Symbol in der Adressleiste oder klicken Sie mit der rechten Maustaste auf die Seite → Übersetzen.",
+          card_1_title: "AutoProcure Rechnungsprüfung",
+          card_1_desc:
+            "Rechnungen scannen und Preisdifferenzen dank Gemini AI sofort erkennen.",
+          card_2_title: "LHDN E-Rechnung Bereit",
+          card_2_desc:
+            "Konforme E-Rechnungen inklusive MyInvois QR-Code und Sofortzahlungs-Simulation erstellen.",
+          card_3_title: "Menschliche Kontrolle",
+          card_3_desc:
+            "Keine Freigabe ohne vorherige Google Authenticator 2FA-Bestätigung.",
+          btn_cta_dashboard: "Kak Nadiah Dashboard Öffnen",
+          modal_login_title: "2FA Sicherheitsüberprüfung",
+          lbl_password: "Passwort",
+          lbl_otp: "6-stelliger Google Authenticator Code",
+          btn_submit_login: "Bestätigen & Einloggen",
+          link_scan_qr: "QR-Code noch nicht gescannt? Hier klicken",
+          qr_instruction:
+            "Diesen Code mit der Google Authenticator App scannen:",
+        },
+        es: {
+          nav_subheading: "Copiloto Inteligente para PYMEs Orbyte • SDC 2026",
+          badge_orbyte: "Sincronizado con Orbyte",
+          btn_login_2fa: "Portal Empleador (2FA)",
+          hero_tagline: '"Menos trabajo repetitivo, negocios más veloces"',
+          hero_title:
+            "Facturación y cumplimiento fiscal e-Invoice sin complicaciones.",
+          hero_desc:
+            "Kak Nadiah escanea facturas de proveedores, detecta aumentos no pactados, redacta e-Invoices LHDN y sincroniza todo con Orbyte bajo control humano total.",
+          tip_heading: "Traducción nativa del navegador (249+ idiomas):",
+          tip_text:
+            "Haga clic en el icono de traducción de la barra de direcciones o clic derecho → Traducir para visualizar la página en su idioma.",
+          card_1_title: "Auditoría AutoProcure",
+          card_1_desc:
+            "Escanee recibos y detecte discrepancias de precios al instante con Gemini AI.",
+          card_2_title: "Listo para e-Invoice LHDN",
+          card_2_desc:
+            "Genere facturas electrónicas con código QR de verificación MyInvois.",
+          card_3_title: "Supervisión Humana",
+          card_3_desc:
+            "Ningún pago o ajuste se ejecuta sin confirmación 2FA de Google Authenticator.",
+          btn_cta_dashboard: "Abrir Panel Ejecutivo de Kak Nadiah",
+          modal_login_title: "Verificación de Seguridad 2FA",
+          lbl_password: "Contraseña de Empleador",
+          lbl_otp: "Código de 6 dígitos Google Authenticator",
+          btn_submit_login: "Verificar e Ingresar",
+          link_scan_qr: "¿No ha escaneado el código QR? Haga clic aquí",
+          qr_instruction:
+            "Escanee este código con la aplicación Google Authenticator de su móvil:",
+        },
+        id: {
+          nav_subheading: "Orbyte SME Copilot • Domain 2 SDC 2026",
+          badge_orbyte: "Orbyte Terhubung",
+          btn_login_2fa: "Portal Pemilik (2FA)",
+          hero_tagline: '"Kurangi Pekerjaan Repetitif, Bisnis Melaju Cepat"',
+          hero_title: "Kelola Faktur & Kepatuhan e-Invois Tanpa Beban Pikiran.",
+          hero_desc:
+            "Kak Nadiah memindai faktur pemasok, mendeteksi kenaikan harga sepihak, menyusun e-Invois resmi, dan menyinkronkan data langsung ke Orbyte di bawah kendali penuh pemilik.",
+          tip_heading: "Fitur Terjemahan Peramban (249+ Bahasa):",
+          tip_text:
+            "Gunakan ikon Terjemahkan pada bilah alamat peramban Anda, klik kanan → Terjemahkan, atau gunakan pilihan bahasa di sebelah kanan.",
+          card_1_title: "AutoProcure Faktur",
+          card_1_desc:
+            "Pindai struk dan deteksi selisih harga pemasok seketika menggunakan Gemini AI.",
+          card_2_title: "Siap e-Invois LHDN",
+          card_2_desc:
+            "Hasilkan e-Invois standar lengkap dengan kode QR validasi dan simulasi pembayaran instan.",
+          card_3_title: "Kontrol Penuh Pemilik",
+          card_3_desc:
+            "Tidak ada transaksi atau sinkronisasi yang berjalan tanpa verifikasi 2FA Google Authenticator.",
+          btn_cta_dashboard: "Buka Dashboard Eksekutif Kak Nadiah",
+          modal_login_title: "Verifikasi Keamanan 2FA",
+          lbl_password: "Kata Sandi Pemilik",
+          lbl_otp: "Kode 6-Digit Google Authenticator",
+          btn_submit_login: "Konfirmasi & Masuk Dashboard",
+          link_scan_qr: "Belum memindai kode QR 2FA? Klik di sini",
+          qr_instruction:
+            "Pindai kode QR ini menggunakan aplikasi Google Authenticator di ponsel Anda:",
+        },
+      };
+
+      // 5. FUNGSI PENUKAR BAHASA
+      async function tukarBahasaUI(lang) {
+        if (lang === "custom") {
+          const inputLang = prompt(
+            "Taipkan nama mana-mana bahasa di dunia (contoh: Turkish, Russian, Tagalog, Swahili):",
+          );
+          if (!inputLang || !inputLang.trim()) {
+            document.getElementById("uiLanguageSelect").value =
+              localStorage.getItem("selected_ui_lang") || "ms";
+            return;
+          }
+          lang = inputLang.trim();
+        }
+
+        // Jika bahasa ada dalam kamus segera
+        if (i18nTranslations[lang]) {
+          terapTerjemahanKeSkrin(i18nTranslations[lang]);
+          localStorage.setItem("selected_ui_lang", lang);
+          document.getElementById("uiLanguageSelect").value = lang;
+          return;
+        }
+
+        // Semak cache ingatan bagi bahasa tersuai
+        const cacheKey = `i18n_front_${lang.toLowerCase()}`;
+        const saved = localStorage.getItem(cacheKey);
+        if (saved) {
+          try {
+            terapTerjemahanKeSkrin(JSON.parse(saved));
+            localStorage.setItem("selected_ui_lang", lang);
+            return;
+          } catch (e) {}
+        }
+
+        // Panggilan API pelayan jika bahasa selain 11 di atas
+        const selectEl = document.getElementById("uiLanguageSelect");
+        if (selectEl) selectEl.disabled = true;
+
+        try {
+          const clientApiKey = localStorage.getItem("byok_gemini") || "";
+          const res = await fetch("/api/translate/ui", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              targetLanguage: lang,
+              sourceTexts: i18nTranslations.ms,
+              clientApiKey: clientApiKey,
+            }),
+          });
+
+          const data = await res.json();
+          if (data.success && data.translations) {
+            localStorage.setItem(cacheKey, JSON.stringify(data.translations));
+            localStorage.setItem("selected_ui_lang", lang);
+            terapTerjemahanKeSkrin(data.translations);
+          } else {
+            alert(
+              "Gunakan ikon Translate pada bar carian pelayar anda untuk bahasa ini.",
+            );
+            if (selectEl)
+              selectEl.value = localStorage.getItem("selected_ui_lang") || "ms";
+          }
+        } catch (err) {
+          if (selectEl)
+            selectEl.value = localStorage.getItem("selected_ui_lang") || "ms";
+        } finally {
+          if (selectEl) selectEl.disabled = false;
+        }
+      }
+
+      function terapTerjemahanKeSkrin(dictionary) {
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (dictionary[key]) {
+            el.innerText = dictionary[key];
+          }
+        });
+      }
+
+      window.onload = () => {
+        kemaskiniIkonTema();
+        const savedLang = localStorage.getItem("selected_ui_lang") || "ms";
+        const selectEl = document.getElementById("uiLanguageSelect");
+        if (selectEl) selectEl.value = savedLang;
+        if (savedLang !== "ms" && i18nTranslations[savedLang]) {
+          tukarBahasaUI(savedLang);
+        }
+      };
+    </script>
+  </body>
+</html>

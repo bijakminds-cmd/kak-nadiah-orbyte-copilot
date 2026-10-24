@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ms" class="bg-slate-100 dark:bg-[#0b0f19]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arkib Sejarah Perbualan - Kak Nadiah AI Copilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .comic-card {
+        border: 4px solid #000;
+        box-shadow: 6px 6px 0px 0px #000;
+      }
+      .comic-btn {
+        border: 2px solid #000;
+        box-shadow: 3px 3px 0px 0px #000;
+      }
+    </style>
+  </head>
+  <body
+    class="p-6 md:p-10 max-w-5xl mx-auto space-y-6 text-slate-950 dark:text-slate-100"
+  >
+    <div
+      class="comic-card bg-white dark:bg-slate-900 p-6 rounded-3xl flex justify-between items-center"
+    >
+      <div>
+        <span
+          class="bg-pink-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded border border-black uppercase shadow-[1px_1px_0px_#000]"
+        >
+          📜 LOG MEMORI KEKAL
+        </span>
+        <h1 class="text-xl font-black uppercase mt-1">
+          Arkib Sejarah Perbualan Kak Nadiah &amp; Hakim
+        </h1>
+        <p class="text-xs text-slate-500 font-bold">
+          Merekodkan log perbualan suara dan teks yang tidak dibuang walaupun
+          pelayan Node.js dimatikan.
+        </p>
+      </div>
+      <button
+        onclick="window.print()"
+        class="comic-btn px-4 py-2 bg-yellow-300 font-black text-xs uppercase rounded-xl"
+      >
+        <i class="fa-solid fa-print"></i> Cetak Log
+      </button>
+    </div>
+
+    <div
+      id="fullHistoryContainer"
+      class="comic-card bg-white dark:bg-slate-900 p-6 rounded-3xl space-y-4 text-xs font-bold"
+    >
+      <div class="text-center text-slate-400">Memuatkan arkib perbualan...</div>
+    </div>
+
+    <script>
+      async function loadHistory() {
+        const c = document.getElementById("fullHistoryContainer");
+        try {
+          const res = await fetch("/api/chat/history");
+          const data = await res.json();
+          const history =
+            data.history ||
+            JSON.parse(localStorage.getItem("kak_nadiah_chat_archive") || "[]");
+
+          if (!history.length) {
+            c.innerHTML =
+              '<div class="text-center text-slate-400 py-10">Tiada arkib mesej ditemui.</div>';
+            return;
+          }
+
+          c.innerHTML = history
+            .map(
+              (m) => `
+            <div class="p-4 rounded-xl border-2 border-black ${m.sender === "user" ? "bg-indigo-50 dark:bg-indigo-950/40 text-left" : "bg-slate-50 dark:bg-slate-800 text-left"} space-y-1">
+              <div class="flex justify-between items-center border-b border-black/10 pb-1">
+                <span class="font-black uppercase text-pink-600">${m.sender === "user" ? "Hakim" : "Kak Nadiah"}</span>
+                <span class="font-mono text-slate-400 text-[10px]">${m.timestamp || m.time}</span>
+              </div>
+              <p class="whitespace-pre-wrap leading-relaxed mt-1">${m.text || m.message}</p>
+            </div>
+          `,
+            )
+            .join("");
+        } catch (e) {
+          c.innerHTML =
+            '<div class="text-center text-rose-500">Gagal memuatkan rekod arkib pelayan.</div>';
+        }
+      }
+      window.onload = loadHistory;
+    </script>
+  </body>
+</html>
