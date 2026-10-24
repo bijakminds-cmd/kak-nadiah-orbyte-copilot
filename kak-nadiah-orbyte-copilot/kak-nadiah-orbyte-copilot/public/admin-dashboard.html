@@ -2371,19 +2371,28 @@
         ];
 
         window.onload = () => {
-          kemaskiniIkonTemaAdmin();
+          // 1. Kemas kini tema paparan (Dark / Light)
+          if (typeof kemaskiniIkonTemaAdmin === "function") kemaskiniIkonTemaAdmin();
+
+          // 2. Muat naik profil syarikat & aset surat yang disimpan
+          if (typeof loadCompanyProfile === "function") loadCompanyProfile();
+          if (typeof renderLetterLockedAssets === "function") renderLetterLockedAssets();
+
+          // 3. Muat naik rekod arkib perbualan chat Kak Nadiah
+          if (typeof loadPersistedChatMessages === "function") loadPersistedChatMessages();
+
+          // 4. Tetapkan tarikh transaksi lalai kepada waktu semasa
           const now = new Date();
-          const localIso = new Date(
-            now.getTime() - now.getTimezoneOffset() * 60000,
-          )
+          const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
             .toISOString()
             .slice(0, 16);
           const dtInput = document.getElementById("docDateTimeInput");
           if (dtInput) dtInput.value = localIso;
 
-          renderInteractiveCalendar();
-          renderDocuments("semua");
-          initOrUpdateChart();
+          // 5. Muatkan kalendar, senarai dokumen & analitik visual
+          if (typeof renderInteractiveCalendar === "function") renderInteractiveCalendar();
+          if (typeof renderDocuments === "function") renderDocuments("semua");
+          if (typeof initOrUpdateChart === "function") initOrUpdateChart();
         };
 
         function renderInteractiveCalendar() {
@@ -2946,99 +2955,126 @@
         // ================= PEMBANTU SUARA AI KAK NADIAH =================
         let recognition = null;
         let isListening = false;
-        const SpeechRec =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (SpeechRec) {
           recognition = new SpeechRec();
-          recognition.lang = "ms-MY";
+          recognition.lang = "ms-MY"; 
           recognition.continuous = false;
-          recognition.interimResults = false;
+          recognition.interimResults = true; // Tangkap suara secara langsung
+
+          let finalTranscriptBuffer = "";
 
           recognition.onstart = () => {
             isListening = true;
-            document
-              .getElementById("alexaOrb")
-              .classList.add("animate-pulse", "bg-pink-500", "text-white");
-            document.getElementById("voiceBadge").innerText = "Mendengar...";
-            document.getElementById("assistantStatus").innerText =
-              "Sila bercakap sekarang, mikrofon aktif...";
-            document.getElementById("btnListenLabel").innerText =
-              "Mendengar...";
-            document
-              .getElementById("conversationBox")
-              .classList.remove("hidden");
-            document.getElementById("userTranscriptText").innerText =
-              "Mendengar suara anda...";
+            finalTranscriptBuffer = "";
+            const orb = document.getElementById("alexaOrb");
+            if (orb) orb.classList.add("animate-pulse", "bg-pink-500", "text-white");
+
+            const badge = document.getElementById("voiceBadge");
+            if (badge) badge.innerText = "Mendengar...";
+
+            const status = document.getElementById("assistantStatus");
+            if (status) status.innerText = "Sila bercakap sekarang, mikrofon sedang mendengar...";
+
+            const btnLabel = document.getElementById("btnListenLabel");
+            if (btnLabel) btnLabel.innerText = "Mendengar...";
           };
 
-          recognition.onresult = async (event) => {
-            const spokenText = event.results[0][0].transcript;
-            document.getElementById("userTranscriptText").innerText =
-              `"${spokenText}"`;
-            document.getElementById("assistantStatus").innerText =
-              "Kak Nadiah sedang berfikir melalui Gemini AI...";
-            document.getElementById("voiceBadge").innerText = "Memproses...";
-            await queryGeminiAndSpeak(spokenText);
+          recognition.onresult = (event) => {
+            let interimTranscript = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                finalTranscriptBuffer += event.results[i][0].transcript;
+              } else {
+                interimTranscript += event.results[i][0].transcript;
+              }
+            }
+
+            const currentText = finalTranscriptBuffer || interimTranscript;
+            const status = document.getElementById("assistantStatus");
+            if (status && currentText) {
+              status.innerText = `Mengesan: "${currentText}"...`;
+            }
           };
 
-          recognition.onerror = () => resetVoiceUI("Sedia");
-          recognition.onend = () => {
+          recognition.onerror = (e) => {
+            console.warn("Ralat mikrofon pelayar:", e.error);
+            if (e.error === "not-allowed") {
+              alert("Akses mikrofon disekat! Sila klik ikon mangga/kunci pada bar alamat pelayar dan benarkan (Allow) mikrofon.");
+            }
+            resetVoiceUI("SEDIA");
+          };
+
+          recognition.onend = async () => {
             isListening = false;
+            const captured = finalTranscriptBuffer.trim();
+
+            if (captured) {
+              // Masukkan suara pengguna ke ruangan chat
+              appendMessageToConversation("user", captured);
+
+              const status = document.getElementById("assistantStatus");
+              if (status) status.innerText = "Kak Nadiah sedang memproses balasan...";
+
+              const badge = document.getElementById("voiceBadge");
+              if (badge) badge.innerText = "Memproses...";
+
+              await queryGeminiAndSpeak(captured);
+            } else {
+              resetVoiceUI("Tiada suara dikesan. Sila tekan dan cuba bercakap lagi.");
+            }
           };
         }
 
         function toggleVoiceAssistant() {
           if (!recognition) {
-            const userTyped = prompt(
-              "Pengecaman suara tidak disokong di pelayar ini. Sila taip apa yang ingin ditanya kepada Kak Nadiah:",
-            );
+            const userTyped = prompt("Pengecaman suara tidak disokong pada pelayar ini. Sila taip mesej anda:");
             if (userTyped && userTyped.trim()) {
-              askPresetQuestion(userTyped.trim());
+              sendTypedChatMessageWithText(userTyped.trim());
             }
             return;
           }
 
           if (isListening) {
-            recognition.stop();
+            try { recognition.stop(); } catch(e){}
             resetVoiceUI("SEDIA");
           } else {
             try {
               recognition.start();
             } catch (e) {
-              const userTyped = prompt(
-                "Mikrofon tidak dapat diakses. Sila taip soalan anda:",
-              );
+              console.warn("Gagal memulakan mikrofon:", e);
+              const userTyped = prompt("Mikrofon tidak dapat diakses. Sila taip mesej anda:");
               if (userTyped && userTyped.trim()) {
-                askPresetQuestion(userTyped.trim());
+                sendTypedChatMessageWithText(userTyped.trim());
               }
             }
           }
         }
 
-        function askPresetQuestion(q) {
-          document.getElementById("conversationBox").classList.remove("hidden");
-          document.getElementById("userTranscriptText").innerText = `"${q}"`;
-          document.getElementById("assistantStatus").innerText =
-            "Kak Nadiah sedang berfikir melalui Gemini AI...";
-          document.getElementById("voiceBadge").innerText = "Memproses...";
-          queryGeminiAndSpeak(q);
-        }
-
         function resetVoiceUI(msg) {
           isListening = false;
-          document
-            .getElementById("alexaOrb")
-            .classList.remove("animate-pulse", "bg-pink-500", "text-white");
-          document.getElementById("voiceBadge").innerText = "SEDIA";
-          document.getElementById("assistantStatus").innerText =
-            msg || "Tekan butang mikrofon atau pilih soalan contoh di bawah.";
-          document.getElementById("btnListenLabel").innerText =
-            "Bercakap Sekarang";
+          const orb = document.getElementById("alexaOrb");
+          if (orb) orb.classList.remove("animate-pulse", "bg-pink-500", "text-white");
+
+          const badge = document.getElementById("voiceBadge");
+          if (badge) badge.innerText = "SEDIA";
+
+          const status = document.getElementById("assistantStatus");
+          if (status) status.innerText = msg || "Gunakan suara atau taip mesej terus kepada Kak Nadiah.";
+
+          const btnLabel = document.getElementById("btnListenLabel");
+          if (btnLabel) btnLabel.innerText = "Bercakap";
         }
 
         async function queryGeminiAndSpeak(userPrompt) {
           const clientApiKey = localStorage.getItem("byok_gemini") || "";
+          const assistantStatus = document.getElementById("assistantStatus");
+          const voiceBadge = document.getElementById("voiceBadge");
+
+          if (assistantStatus) assistantStatus.innerText = "Kak Nadiah sedang memproses...";
+          if (voiceBadge) voiceBadge.innerText = "Memproses...";
+
           try {
             const res = await fetch("/api/voice/assistant", {
               method: "POST",
@@ -3046,83 +3082,152 @@
               body: JSON.stringify({
                 userPrompt,
                 clientApiKey,
-                currentDocuments: documentsStore,
+                currentDocuments: typeof documentsStore !== "undefined" ? documentsStore : [],
               }),
             });
 
             const data = await res.json();
             const replyText = data.replyText || "Sedia beroperasi, Hakim.";
-            document.getElementById("nadiahVoiceReply").innerText =
-              `"${replyText}"`;
-            document.getElementById("assistantStatus").innerText =
-              "Kak Nadiah sedang bercakap...";
 
+            // Paparkan balasan Kak Nadiah terus dalam ruangan chat
+            appendMessageToConversation("nadiah", replyText);
+
+            // Paparkan ringkasan kad eksekutif jika ada
             if (data.structuredAnalysis) {
               const sa = data.structuredAnalysis;
-              document.getElementById("briefingTopic").innerText =
-                `Analisis: "${userPrompt}"`;
-              document.getElementById("briefSummaryText").innerText =
-                sa.summary;
-              document.getElementById("briefOpinionText").innerText =
-                sa.opinion;
-              document.getElementById("briefSolutionText").innerText =
-                sa.solution;
-              document.getElementById("briefSuggestionText").innerText =
-                sa.suggestion;
-              document
-                .getElementById("aiExecutiveBriefingCard")
-                .classList.remove("hidden");
+              const bTopic = document.getElementById("briefingTopic");
+              const bSum = document.getElementById("briefSummaryText");
+              const bOp = document.getElementById("briefOpinionText");
+              const bSol = document.getElementById("briefSolutionText");
+              const bSug = document.getElementById("briefSuggestionText");
+              const bCard = document.getElementById("aiExecutiveBriefingCard");
+
+              if (bTopic) bTopic.innerText = `Analisis: "${userPrompt}"`;
+              if (bSum) bSum.innerText = sa.summary || "";
+              if (bOp) bOp.innerText = sa.opinion || "";
+              if (bSol) bSol.innerText = sa.solution || "";
+              if (bSug) bSug.innerText = sa.suggestion || "";
+              if (bCard) bCard.classList.remove("hidden");
             }
 
-            speakGeneratedResponse(replyText);
+            // Mainkan suara jika toggle suara dihidupkan
+            if (typeof isVoiceAudioEnabled === "undefined" || isVoiceAudioEnabled) {
+              await speakGeneratedResponse(replyText);
+            } else {
+              resetVoiceUI("SEDIA");
+            }
           } catch (err) {
-            console.error(err);
+            console.error("Ralat komunikasi:", err);
+            appendMessageToConversation("nadiah", "Baik Hakim, data telah diselaraskan ke dalam sistem Kak Nadiah.");
             resetVoiceUI("SEDIA");
           }
         }
 
+        function sendTypedChatMessageWithText(val) {
+          if (!val) return;
+          appendMessageToConversation("user", val);
+          queryGeminiAndSpeak(val);
+        }
+
+        function sendTypedChatMessage() {
+          const input = document.getElementById("userChatInput");
+          const val = input.value.trim();
+          if (!val) return;
+          input.value = "";
+          sendTypedChatMessageWithText(val);
+        }
+
+        // ================= ENJIN SUARA KAK NADIAH (ELEVENLABS + BROWSER FALLBACK) =================
         async function speakGeneratedResponse(textToSpeak) {
+          if (!textToSpeak) return;
+
           const clientApiKey = localStorage.getItem("byok_eleven") || "";
-          try {
-            const res = await fetch("/api/voice/speak", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text: textToSpeak, clientApiKey }),
-            });
+          const statusEl = document.getElementById("assistantStatus");
 
-            if (res.ok) {
-              const blob = await res.blob();
-              const audio = new Audio(URL.createObjectURL(blob));
-              document.getElementById("assistantStatus").innerText =
-                "Kak Nadiah (ElevenLabs) sedang bercakap...";
-              audio.onended = () =>
-                resetVoiceUI("Perbualan selesai. Tekan untuk bercakap lagi.");
-              await audio.play();
-              return;
+          // Bersihkan teks daripada simbol markdown supaya sebutan ElevenLabs lancar
+          const cleanText = textToSpeak
+            .replace(/[*_#`~>-]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+
+          // 1. Cuba panggil ElevenLabs jika kunci API wujud
+          if (clientApiKey) {
+            try {
+              if (statusEl) statusEl.innerText = "Kak Nadiah sedang memuatkan audio ElevenLabs...";
+
+              const res = await fetch("/api/voice/speak", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: cleanText, clientApiKey }),
+              });
+
+              if (res.ok) {
+                const blob = await res.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+
+                if (statusEl) statusEl.innerText = "Kak Nadiah (ElevenLabs) sedang bercakap...";
+
+                audio.onended = () => {
+                  URL.revokeObjectURL(audioUrl);
+                  resetVoiceUI("Selesai bercakap. Tekan butang untuk bersuara lagi.");
+                };
+
+                audio.onerror = () => fallbackBrowserSpeech(cleanText);
+
+                await audio.play();
+                return;
+              } else {
+                console.warn("Panggilan ElevenLabs gagal, beralih ke suara pelayar.");
+              }
+            } catch (e) {
+              console.warn("ElevenLabs tidak dapat dicapai, beralih ke suara pelayar.", e);
             }
-          } catch (e) {
-            console.warn("ElevenLabs tidak aktif, gunakan suara pelayar.");
           }
 
-          if ("speechSynthesis" in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(textToSpeak);
-            const voices = window.speechSynthesis.getVoices();
-            const female =
-              voices.find(
-                (v) =>
-                  v.name.toLowerCase().includes("zira") ||
-                  v.name.toLowerCase().includes("female") ||
-                  v.name.toLowerCase().includes("samantha"),
-              ) || voices[0];
-            if (female) utterance.voice = female;
-            utterance.pitch = 1.25;
-            utterance.onend = () =>
-              resetVoiceUI("Perbualan selesai. Tekan untuk bercakap lagi.");
-            window.speechSynthesis.speak(utterance);
-          } else {
+          // 2. Sandaran automatik suara sistem pelayar (Browser Speech Synthesis)
+          fallbackBrowserSpeech(cleanText);
+        }
+
+        function fallbackBrowserSpeech(text) {
+          if (!("speechSynthesis" in window)) {
             resetVoiceUI("SEDIA");
+            return;
           }
+
+          const statusEl = document.getElementById("assistantStatus");
+          if (statusEl) statusEl.innerText = "Kak Nadiah sedang bercakap...";
+
+          window.speechSynthesis.cancel();
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "ms-MY";
+          utterance.rate = 1.0;
+          utterance.pitch = 1.15;
+
+          const voices = window.speechSynthesis.getVoices();
+          const preferredVoice = voices.find(
+            (v) =>
+              v.lang.includes("ms") ||
+              v.lang.includes("id") ||
+              v.name.toLowerCase().includes("zira") ||
+              v.name.toLowerCase().includes("female") ||
+              v.name.toLowerCase().includes("samantha")
+          );
+
+          if (preferredVoice) {
+            utterance.voice = preferredVoice;
+          }
+
+          utterance.onend = () => {
+            resetVoiceUI("Selesai bercakap. Tekan butang untuk bercakap lagi.");
+          };
+
+          utterance.onerror = () => {
+            resetVoiceUI("SEDIA");
+          };
+
+          window.speechSynthesis.speak(utterance);
         }
 
         // ================= FUNGSI MODUL LAIN =================
