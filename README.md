@@ -8,10 +8,10 @@
 ---
 
 ## 📺 Project Demo Video
-[![Kak Nadiah Demo Video](https://img.shields.io/badge/YouTube-Watch%20Demo%20Video-red?style=for-the-badge&logo=youtube)](PAUTAN_YOUTUBE_HAKIM_DI_SINI)
+[![Kak Nadiah Demo Video](https://img.shields.io/badge/YouTube-Watch%20Demo%20Video-red?style=for-the-badge&logo=youtube)](https://youtu.be/ifgGhA9cloo)
 
 > 💡 **Nota Penting Penilaian / Note for Evaluators:**  
-> Pautan demo rasmi boleh ditonton secara terus melalui: **[Tonton Video Demo YouTube](PAUTAN_YOUTUBE_HAKIM_DI_SINI)**.  
+> Pautan demo rasmi boleh ditonton secara terus melalui: **[Tonton Video Demo YouTube (Team Bijak Minds)](https://youtu.be/ifgGhA9cloo)**.  
 > Disebabkan kuota token kredit percuma ElevenLabs telah habis semasa sesi ujian akhir dan rakaman, sistem telah mengaktifkan ciri keselamatan **Dynamic Browser Speech Fallback**. Kak Nadiah tetap berfungsi sepenuhnya membacakan teks balasan secara langsung menggunakan enjin suara bawaan pelayar web (*browser-native Web Speech Synthesis*) tanpa sebarang gangguan operasi.
 
 ---
