@@ -10,6 +10,20 @@
 ## 📺 Project Demo Video
 [![Kak Nadiah Demo Video](https://img.shields.io/badge/YouTube-Watch%20Demo%20Video-red?style=for-the-badge&logo=youtube)](https://youtu.be/ifgGhA9cloo)
 
+### ⚠️ Note on Live Prototype Access (Replit Sandbox Lifecycle)
+
+The live prototype link (`https://590b068c-dd0e-4e78-9e04-78baeb87c670-00-3ttbi7c4xh6it.sisko.replit.dev/`) is deployed on **Replit's containerized free tier**[cite: 6].
+
+1. **Ephemeral Container Hibernation (HTTP 502 / Cold Start):**  
+   Free-tier Replit development environments automatically enter an idle sleep state (*container hibernation*) when there is no active session from the workspace owner. If external access encounters an `HTTP 502 Bad Gateway` error, it indicates the sandbox container has spun down to conserve resources[cite: 8].
+2. **Primary Evaluation Benchmark (Ground Truth):**  
+   Evaluators are strongly encouraged to refer to our **Official 10-Minute YouTube Demo Video** linked above[cite: 6]. It provides a full, uninterrupted, end-to-end demonstration of the production-ready system in action—including 2FA authentication, Gemini 2.5 Flash invoice audit, dual-engine voice interaction, and Orbyte Cloud synchronization[cite: 6].
+3. **Local Reproduction:**  
+   The project can also be run locally with zero configuration overhead:
+   ```bash
+   npm install
+   node server.js
+
 > 💡 **Nota Penting Penilaian / Note for Evaluators:**  
 > Pautan demo rasmi boleh ditonton secara terus melalui: **[Tonton Video Demo YouTube (Team Bijak Minds)](https://youtu.be/ifgGhA9cloo)**.  
 > Disebabkan kuota token kredit percuma ElevenLabs telah habis semasa sesi ujian akhir dan rakaman, sistem telah mengaktifkan ciri keselamatan **Dynamic Browser Speech Fallback**. Kak Nadiah tetap berfungsi sepenuhnya membacakan teks balasan secara langsung menggunakan enjin suara bawaan pelayar web (*browser-native Web Speech Synthesis*) tanpa sebarang gangguan operasi.
